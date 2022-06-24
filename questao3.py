@@ -1,8 +1,7 @@
 import itertools
 from copy import deepcopy
 
-
-pessoas = 6
+pessoas = 3
 
 def slice_by_lengths(lengths, the_list):
     for length in lengths:
@@ -19,7 +18,6 @@ def subgrups(my_list):
     permed = []
     for each_partition in partitions:
         permed.append(set(itertools.permutations(each_partition, len(each_partition))))
-
     for each_tuple in itertools.chain(*permed):
         yield list(slice_by_lengths(each_tuple, deepcopy(my_list)))
 
@@ -27,6 +25,7 @@ def subgrups(my_list):
 def return_partition(my_list,num_groups):
     filtered=[]
     for perm in itertools.permutations(my_list,len(my_list)):
+        # print(itertools.permutations(my_list,len(my_list)))
         for sub_group_perm in subgrups(list(perm)):
             if len(sub_group_perm)==num_groups:
                 #sort  within each partition
@@ -39,16 +38,19 @@ def return_partition(my_list,num_groups):
                 if sort3 not in filtered:
                     filtered.append(sort3)
     return filtered
+#     # lista.append(pessoas[i])
 
 lista = []
 i = 0
 while i < pessoas:
     i  = i + 1
     lista.append(i)
+
+
+    
 countj = 0
 for j in return_partition(lista,1):
     countj = countj + 1
-
     print(j)
 
 
@@ -56,6 +58,7 @@ count = 0
 for n in return_partition(lista,2):
     print(n)
     count = count + 1
-    print(count)
 
 print('iterativamente temos', count+countj)
+
+
