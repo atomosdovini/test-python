@@ -1,7 +1,7 @@
 import itertools
 from copy import deepcopy
 
-pessoas = 3
+pessoas = 4
 
 def slice_by_lengths(lengths, the_list):
     for length in lengths:
@@ -47,7 +47,7 @@ while i < pessoas:
     lista.append(i)
 
 
-    
+
 countj = 0
 for j in return_partition(lista,1):
     countj = countj + 1
