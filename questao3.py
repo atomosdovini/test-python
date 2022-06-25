@@ -1,64 +1,78 @@
-import itertools
-from copy import deepcopy
+from itertools import combinations
 
-pessoas = 4
+Entrada = 3
+npos_it = 0
+npos_rec = 0
+narray = []
 
-def slice_by_lengths(lengths, the_list):
-    for length in lengths:
-        new = []
-        for i in range(length):
-            new.append(the_list.pop(0))
-        yield new
+#funçoes iterativas
+def partitionsIt(elements, size):
+    elements = set(elements)
+    assert(len(elements) % size == 0)
+    if len(elements) == 0:
+        yield ()
+        return
+    first = next(iter(elements))
+    rest = elements.difference((first,))
+    for c in combinations(rest, size - 1):
+        first_subset = (first,) + c
+        for p in partitionsIt(rest.difference(c), size):
+            firstsub = (first_subset,) + p
+            yield firstsub
 
-def partition(number):
-    return {(x,) + y for x in range(1, number) for y in partition(number-x)} | {(number,)}
+def partitions_iter(elements, size): 
+    elements = set(elements)
+    for n in range(len(elements), -1, -size):
+        if n == 0:
+            for p in partitionsIt(elements, size):
+                yield p
+        elif n != size:
+            for remainder in combinations(elements, n):
+                for p in partitionsIt(elements.difference(remainder), size):
+                    group = p + (remainder,)
+                    yield group   
+#funçoes recursivas
+def partitions(elements, size):
+    elements = set(elements)
+    assert(len(elements) % size == 0)
+    if len(elements) == 0:
+        yield ()
+        return
+    first = next(iter(elements))
+    rest = elements.difference((first,))
+    for c in combinations(rest, size - 1):
+        first_subset = (first,) + c
+        for p in partitions(rest.difference(c), size):
+            yield (first_subset,) + p
 
-def subgrups(my_list):
-    partitions = partition(len(my_list))
-    permed = []
-    for each_partition in partitions:
-        permed.append(set(itertools.permutations(each_partition, len(each_partition))))
-    for each_tuple in itertools.chain(*permed):
-        yield list(slice_by_lengths(each_tuple, deepcopy(my_list)))
+def partitions_rec(elements, size): 
+    elements = set(elements)
+    for n in range(len(elements), -1, -size):
+        if n == 0:
+            for p in partitions(elements, size):
+                yield p
+        elif n != size:
+            for remainder in combinations(elements, n):
+                for p in partitions(elements.difference(remainder), size):
+                    yield p + (remainder)
+def possibilities(groups):
+    npos = 0
+    while npos < len(groups):
+        npos +=1
+    return npos
 
+def entrada():
+    for n in range(Entrada):
+        n = n +1
+        narray.append(n)
+    return narray   
 
-def return_partition(my_list,num_groups):
-    filtered=[]
-    for perm in itertools.permutations(my_list,len(my_list)):
-        # print(itertools.permutations(my_list,len(my_list)))
-        for sub_group_perm in subgrups(list(perm)):
-            if len(sub_group_perm)==num_groups:
-                #sort  within each partition
-                sort1=[sorted(i) for i in sub_group_perm]
-                #sort by first element of each partition
-                sort2=sorted(sort1, key=lambda t:t[0])
-                #sort by the number of elements in each partition
-                sort3=sorted(sort2, key=lambda t:len(t))
-                #if this new sorted set of partitions has not been added, add it
-                if sort3 not in filtered:
-                    filtered.append(sort3)
-    return filtered
-#     # lista.append(pessoas[i])
-
-lista = []
-i = 0
-while i < pessoas:
-    i  = i + 1
-    lista.append(i)
-
-
-
-countj = 0
-for j in return_partition(lista,1):
-    countj = countj + 1
-    print(j)
-
-
-count = 0
-for n in return_partition(lista,2):
-    print(n)
-    count = count + 1
-
-print('iterativamente temos', count+countj)
-
-
+narray = entrada()
+groups= (list(partitions_iter(narray, 2)))
+groupsrec= (list(partitions_rec(narray, 2)))
+npos_rec = possibilities(groupsrec)
+while npos_it < len(groups):
+    npos_it +=1
+#prints
+print(f'iterativamente, temos {npos_it} possibilidades de jogos')
+print(f'Recursivamente, temos {npos_rec} possibilidades de jogos')
